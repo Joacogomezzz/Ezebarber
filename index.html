@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbería - Sistema de Citas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Pantalla de Login -->
+    <div id="loginScreen" class="screen active">
+        <div class="login-container">
+            <div class="logo">✂️ BarberPro</div>
+            <h1>Bienvenido</h1>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required placeholder="tu@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+
+                <button type="submit" class="btn-primary">Ingresar</button>
+
+                <p class="toggle-form">¿No tienes cuenta? <a href="#" onclick="toggleForm(event)">Registrarse</a></p>
+
+                <p class="toggle-form" style="margin-top: 30px; text-align: center; font-size: 12px; color: #999;">
+                    <a href="preview-google-sheet.html" target="_blank" style="color: #666;">Ver cómo se ve en Google Sheet →</a>
+                </p>
+            </form>
+
+            <form id="registerForm" class="hidden">
+                <h2 style="text-align: center; margin-bottom: 20px; font-size: 20px;">Crear Cuenta</h2>
+
+                <div class="form-group">
+                    <label for="regName">Nombre</label>
+                    <input type="text" id="regName" required placeholder="Tu nombre">
+                </div>
+
+                <div class="form-group">
+                    <label for="regLastname">Apellido</label>
+                    <input type="text" id="regLastname" required placeholder="Tu apellido">
+                </div>
+
+                <div class="form-group">
+                    <label for="regPhone">Teléfono</label>
+                    <input type="tel" id="regPhone" required placeholder="+34 600 000 000">
+                </div>
+
+                <div class="form-group">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" required placeholder="tu@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="regPassword">Contraseña</label>
+                    <input type="password" id="regPassword" required placeholder="••••••••">
+                </div>
+
+                <div class="form-group">
+                    <label for="regPasswordConfirm">Confirmar Contraseña</label>
+                    <input type="password" id="regPasswordConfirm" required placeholder="••••••••">
+                </div>
+
+                <button type="submit" class="btn-primary">Registrarse</button>
+
+                <p class="toggle-form">¿Ya tienes cuenta? <a href="#" onclick="toggleForm(event)">Ingresar</a></p>
+            </form>
+
+            <div id="loginError" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Pantalla de Cliente -->
+    <div id="clientScreen" class="screen">
+        <div class="container">
+            <header>
+                <h1>✂️ BarberPro</h1>
+                <div class="user-info">
+                    <span id="userDisplay"></span>
+                    <button onclick="logout()" class="btn-secondary">Salir</button>
+                </div>
+            </header>
+
+            <main>
+                <!-- WIZARD CONTAINER -->
+                <div class="wizard-container">
+                    <!-- Progress Bar -->
+                    <div class="wizard-progress">
+                        <span class="progress-text" id="progressText">Paso 1 de 4</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Servicio -->
+                    <div class="wizard-step" id="step1">
+                        <h2>Selecciona un servicio</h2>
+                        <div class="services-grid" id="servicesGrid"></div>
+                        <button type="button" class="btn-primary btn-next" onclick="goToStep(2)">Siguiente</button>
+                    </div>
+
+                    <!-- Step 2: Día -->
+                    <div class="wizard-step hidden" id="step2">
+                        <h2>Elige un día</h2>
+                        <div class="days-scroll" id="daysScroll"></div>
+                        <div class="wizard-actions">
+                            <button type="button" class="btn-secondary" onclick="goToStep(1)">Atrás</button>
+                            <button type="button" class="btn-primary" onclick="goToStep(3)">Siguiente</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Horario -->
+                    <div class="wizard-step hidden" id="step3">
+                        <h2>Elige una hora</h2>
+                        <div class="times-grid" id="timesGrid"></div>
+                        <div class="wizard-actions">
+                            <button type="button" class="btn-secondary" onclick="goToStep(2)">Atrás</button>
+                            <button type="button" class="btn-primary" onclick="goToStep(4)">Siguiente</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Confirmación -->
+                    <div class="wizard-step hidden" id="step4">
+                        <h2>Confirma tu turno</h2>
+                        <div class="confirmation-summary">
+                            <div class="summary-item">
+                                <span class="summary-label">Servicio</span>
+                                <span class="summary-value" id="confirmService">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Día</span>
+                                <span class="summary-value" id="confirmDate">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Hora</span>
+                                <span class="summary-value" id="confirmTime">-</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="notes">Notas (opcional)</label>
+                            <textarea id="notes" placeholder="Especificaciones de tu corte..."></textarea>
+                        </div>
+                        <div id="bookingError" class="error-message"></div>
+                        <div class="wizard-actions">
+                            <button type="button" class="btn-secondary" onclick="goToStep(3)">Atrás</button>
+                            <button type="button" class="btn-primary btn-large" onclick="confirmBooking()">Confirmar Turno</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="bookingSuccess" class="success-message hidden"></div>
+            </main>
+        </div>
+    </div>
+
+
+    <script src="app.js"></script>
+</body>
+</html>
