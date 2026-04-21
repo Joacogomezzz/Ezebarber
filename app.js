@@ -58,12 +58,17 @@ function toggleForm(e) {
 // Handle Login
 function handleLogin(e) {
     e.preventDefault();
-    const email = document.getElementById('email').value;
+    const email = document.getElementById('email').value.trim().toLowerCase();
     const password = document.getElementById('password').value;
     const errorDiv = document.getElementById('loginError');
 
+    if (!email || !password) {
+        errorDiv.textContent = 'Por favor completa todos los campos';
+        return;
+    }
+
     const users = JSON.parse(localStorage.getItem('users')) || [];
-    const user = users.find(u => u.email === email && u.password === password);
+    const user = users.find(u => u.email.toLowerCase() === email && u.password === password);
 
     if (user) {
         currentUser = user;
@@ -84,10 +89,16 @@ function handleRegister(e) {
     const name = document.getElementById('regName').value.trim();
     const lastname = document.getElementById('regLastname').value.trim();
     const phone = document.getElementById('regPhone').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
     const password = document.getElementById('regPassword').value;
     const passwordConfirm = document.getElementById('regPasswordConfirm').value;
     const errorDiv = document.getElementById('loginError');
+
+    // Validar campos vacíos
+    if (!name || !lastname || !phone || !email || !password || !passwordConfirm) {
+        errorDiv.textContent = 'Por favor completa todos los campos';
+        return;
+    }
 
     if (password !== passwordConfirm) {
         errorDiv.textContent = 'Las contraseñas no coinciden';
@@ -100,7 +111,7 @@ function handleRegister(e) {
     }
 
     const users = JSON.parse(localStorage.getItem('users')) || [];
-    if (users.find(u => u.email === email)) {
+    if (users.find(u => u.email.toLowerCase() === email)) {
         errorDiv.textContent = 'El email ya está registrado';
         return;
     }
