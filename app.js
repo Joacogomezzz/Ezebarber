@@ -28,7 +28,7 @@ const SERVICES = {
 };
 
 // Google OAuth
-const GOOGLE_CLIENT_ID = 'TU_GOOGLE_CLIENT_ID_AQUI';
+const GOOGLE_CLIENT_ID = '344608296288-ugp7h88mqrkfnn9l0aq8i2m2n01tdopj.apps.googleusercontent.com';
 
 // Inicializar
 document.addEventListener('DOMContentLoaded', () => {
