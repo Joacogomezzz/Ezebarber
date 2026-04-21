@@ -94,14 +94,14 @@ async function handleLogin(e) {
     let user = users.find(u => u.email.toLowerCase() === email);
 
     // Si no encuentra en localStorage, intenta cargar de Google Sheets
-    if (!user) {
-        const sheetUsers = await loadUsersFromGoogleSheet();
-        if (sheetUsers) {
-            users = sheetUsers;
-            localStorage.setItem('users', JSON.stringify(users));
-            user = users.find(u => u.email.toLowerCase() === email);
-        }
-    }
+    // if (!user) {
+    //     const sheetUsers = await loadUsersFromGoogleSheet();
+    //     if (sheetUsers) {
+    //         users = sheetUsers;
+    //         localStorage.setItem('users', JSON.stringify(users));
+    //         user = users.find(u => u.email.toLowerCase() === email);
+    //     }
+    // }
 
     if (user) {
         let passwordMatch = false;
@@ -125,7 +125,7 @@ async function handleLogin(e) {
                 user.password = hashedPassword;
                 users[users.findIndex(u => u.email.toLowerCase() === email)] = user;
                 localStorage.setItem('users', JSON.stringify(users));
-                sendUserToGoogleSheet(user);
+                // sendUserToGoogleSheet(user);
                 console.log('Contraseña actualizada a bcrypt');
             }
         }
@@ -188,8 +188,8 @@ async function handleRegister(e) {
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
 
-    // Guardar en Google Sheets
-    sendUserToGoogleSheet(newUser);
+    // Guardar en Google Sheets (deshabilitado sin configuración)
+    // sendUserToGoogleSheet(newUser);
 
     currentUser = { name, lastname, phone, email, id: newUser.id, role: 'client' };
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
