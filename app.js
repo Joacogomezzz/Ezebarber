@@ -40,8 +40,8 @@ function checkAuth() {
         currentUser = user;
         showScreen('clientScreen');
         displayUser();
-        loadClientBookings();
         renderWizardStep1();
+        updateWizardUI();
     } else {
         showScreen('loginScreen');
     }
@@ -118,8 +118,9 @@ function handleRegister(e) {
 
     showScreen('clientScreen');
     displayUser();
-    loadClientBookings();
+    wizardState = { step: 1, service: null, serviceLabel: null, date: null, dateLabel: null, time: null, notes: '' };
     renderWizardStep1();
+    updateWizardUI();
 }
 
 // Display user info
