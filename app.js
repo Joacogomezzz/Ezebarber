@@ -27,12 +27,33 @@ const SERVICES = {
     tinte: { label: 'Tinte', price: '$35', duration: '45 min' }
 };
 
+// Google OAuth
+const GOOGLE_CLIENT_ID = 'TU_GOOGLE_CLIENT_ID_AQUI';
+
 // Inicializar
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     document.getElementById('loginForm').addEventListener('submit', handleLogin);
     document.getElementById('registerForm').addEventListener('submit', handleRegister);
+    initializeGoogleLogin();
 });
+
+function initializeGoogleLogin() {
+    if (GOOGLE_CLIENT_ID === 'TU_GOOGLE_CLIENT_ID_AQUI') {
+        console.log('Google Client ID no configurado');
+        return;
+    }
+
+    google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleLogin
+    });
+
+    google.accounts.id.renderButton(
+        document.getElementById('google-login-button'),
+        { theme: 'outline', size: 'large', width: '100%' }
+    );
+}
 
 // Verificar autenticación
 function checkAuth() {
@@ -85,12 +106,18 @@ async function handleLogin(e) {
     if (user) {
         let passwordMatch = false;
 
+        console.log('Usuario encontrado:', user.email);
+        console.log('Contraseña guardada:', user.password.substring(0, 20));
+        console.log('Contraseña ingresada:', password);
+
         // Comprobar si es contraseña hasheada (comienza con $2a$ o $2b$ o $2y$)
-        if (user.password.startsWith('$2a$') || user.password.startsWith('$2b$') || user.password.startsWith('$2y$')) {
+        if (user.password && (user.password.startsWith('$2a$') || user.password.startsWith('$2b$') || user.password.startsWith('$2y$'))) {
             passwordMatch = await bcrypt.compare(password, user.password);
+            console.log('Comparando con bcrypt:', passwordMatch);
         } else {
             // Contraseña antigua sin hashear (compatibilidad)
             passwordMatch = user.password === password;
+            console.log('Comparando texto plano:', passwordMatch);
 
             // Si coincide, rehashear y actualizar
             if (passwordMatch) {
@@ -99,6 +126,7 @@ async function handleLogin(e) {
                 users[users.findIndex(u => u.email.toLowerCase() === email)] = user;
                 localStorage.setItem('users', JSON.stringify(users));
                 sendUserToGoogleSheet(user);
+                console.log('Contraseña actualizada a bcrypt');
             }
         }
 
@@ -114,6 +142,8 @@ async function handleLogin(e) {
             errorDiv.textContent = 'Email o contraseña incorrectos';
         }
     } else {
+        console.log('Usuario no encontrado. Email:', email);
+        console.log('Usuarios disponibles:', users.map(u => u.email));
         errorDiv.textContent = 'Email o contraseña incorrectos';
     }
 }
@@ -541,6 +571,70 @@ function showScreen(screenId) {
     }
 }
 
+// Google Login Handler
+function handleGoogleLogin(response) {
+    const token = response.credential;
+
+    // Decodificar JWT manualmente
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    const userData = JSON.parse(jsonPayload);
+
+    console.log('Google login:', userData);
+
+    // Crear o actualizar usuario
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    let user = users.find(u => u.email.toLowerCase() === userData.email.toLowerCase());
+
+    if (!user) {
+        // Nuevo usuario desde Google
+        user = {
+            name: userData.given_name || '',
+            lastname: userData.family_name || '',
+            email: userData.email,
+            phone: '',
+            password: 'google_oauth',
+            id: Date.now(),
+            role: 'client',
+            googleId: userData.sub
+        };
+        users.push(user);
+        localStorage.setItem('users', JSON.stringify(users));
+        sendUserToGoogleSheet(user);
+    } else {
+        // Usuario existente, actualizar Google ID
+        user.googleId = userData.sub;
+        users[users.findIndex(u => u.email.toLowerCase() === userData.email.toLowerCase())] = user;
+        localStorage.setItem('users', JSON.stringify(users));
+    }
+
+    // Login
+    currentUser = {
+        name: user.name,
+        lastname: user.lastname,
+        email: user.email,
+        phone: user.phone,
+        id: user.id,
+        role: 'client',
+        googleId: user.googleId
+    };
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+    document.getElementById('loginForm').reset();
+    document.getElementById('registerForm').reset();
+    document.getElementById('loginError').textContent = '';
+
+    showScreen('clientScreen');
+    displayUser();
+    loadClientBookings();
+    renderWizardStep1();
+    updateWizardUI();
+}
+
 // Logout
 function logout() {
     localStorage.removeItem('currentUser');
@@ -551,4 +645,9 @@ function logout() {
     document.getElementById('registerForm').reset();
     document.getElementById('registerForm').classList.add('hidden');
     document.getElementById('loginForm').classList.remove('hidden');
+
+    // Logout de Google
+    if (typeof google !== 'undefined') {
+        google.accounts.id.disableAutoSelect();
+    }
 }

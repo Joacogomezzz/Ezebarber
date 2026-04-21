@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eze Barber - Sistema de Citas</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <!-- Pantalla de Login -->
@@ -25,6 +26,14 @@
                 </div>
 
                 <button type="submit" class="btn-primary">Ingresar</button>
+
+                <div style="margin: 20px 0; display: flex; align-items: center; gap: 10px;">
+                    <div style="flex: 1; height: 1px; background: #ddd;"></div>
+                    <span style="color: #999; font-size: 12px;">o</span>
+                    <div style="flex: 1; height: 1px; background: #ddd;"></div>
+                </div>
+
+                <div id="google-login-button"></div>
 
                 <p class="toggle-form">¿No tienes cuenta? <a href="#" onclick="toggleForm(event)">Registrarse</a></p>
 
