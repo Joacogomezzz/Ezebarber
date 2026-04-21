@@ -33,8 +33,7 @@ const GOOGLE_CLIENT_ID = '344608296288-ugp7h88mqrkfnn9l0aq8i2m2n01tdopj.apps.goo
 // Inicializar
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
-    document.getElementById('loginForm').addEventListener('submit', handleLogin);
-    document.getElementById('registerForm').addEventListener('submit', handleRegister);
+    document.getElementById('completeProfileForm').addEventListener('submit', handleCompleteProfile);
     initializeGoogleLogin();
 });
 
@@ -70,14 +69,47 @@ function checkAuth() {
 }
 
 // Toggle entre login y registro
-function toggleForm(e) {
+// Handle complete profile form
+async function handleCompleteProfile(e) {
     e.preventDefault();
-    document.getElementById('loginForm').classList.toggle('hidden');
-    document.getElementById('registerForm').classList.toggle('hidden');
-    document.getElementById('loginError').textContent = '';
+    const name = document.getElementById('profileName').value.trim();
+    const lastname = document.getElementById('profileLastname').value.trim();
+    const phone = document.getElementById('profilePhone').value.trim();
+
+    if (!name || !lastname || !phone) {
+        alert('Por favor completa todos los campos');
+        return;
+    }
+
+    if (window.pendingGoogleUser) {
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const newUser = {
+            ...window.pendingGoogleUser,
+            name,
+            lastname,
+            phone,
+            id: Date.now(),
+            role: 'client'
+        };
+        users.push(newUser);
+        localStorage.setItem('users', JSON.stringify(users));
+
+        currentUser = { name, lastname, phone, email: newUser.email, id: newUser.id, googleId: newUser.googleId, role: 'client' };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+        document.getElementById('completeProfileForm').reset();
+        document.getElementById('completeProfileForm').classList.add('hidden');
+        window.pendingGoogleUser = null;
+
+        showScreen('clientScreen');
+        displayUser();
+        wizardState = { step: 1, service: null, serviceLabel: null, date: null, dateLabel: null, time: null, notes: '' };
+        renderWizardStep1();
+        updateWizardUI();
+    }
 }
 
-// Handle Login
+// Handle Login (DEPRECATED - kept for compatibility)
 async function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('email').value.trim().toLowerCase();
@@ -583,7 +615,6 @@ function handleGoogleLogin(response) {
     }).join(''));
 
     const userData = JSON.parse(jsonPayload);
-
     console.log('Google login:', userData);
 
     // Crear o actualizar usuario
@@ -591,22 +622,22 @@ function handleGoogleLogin(response) {
     let user = users.find(u => u.email.toLowerCase() === userData.email.toLowerCase());
 
     if (!user) {
-        // Nuevo usuario desde Google
-        user = {
-            name: userData.given_name || '',
-            lastname: userData.family_name || '',
+        // Nuevo usuario - pedir nombre, apellido y teléfono
+        window.pendingGoogleUser = {
             email: userData.email,
-            phone: '',
-            password: 'google_oauth',
-            id: Date.now(),
-            role: 'client',
             googleId: userData.sub
         };
-        users.push(user);
-        localStorage.setItem('users', JSON.stringify(users));
-        sendUserToGoogleSheet(user);
-    } else {
-        // Usuario existente, actualizar Google ID
+
+        document.getElementById('profileName').value = userData.given_name || '';
+        document.getElementById('profileLastname').value = userData.family_name || '';
+        document.getElementById('profilePhone').value = '';
+
+        document.getElementById('completeProfileForm').classList.remove('hidden');
+        return;
+    }
+
+    // Usuario existente, actualizar Google ID
+    if (!user.googleId) {
         user.googleId = userData.sub;
         users[users.findIndex(u => u.email.toLowerCase() === userData.email.toLowerCase())] = user;
         localStorage.setItem('users', JSON.stringify(users));
@@ -623,10 +654,6 @@ function handleGoogleLogin(response) {
         googleId: user.googleId
     };
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
-    document.getElementById('loginForm').reset();
-    document.getElementById('registerForm').reset();
-    document.getElementById('loginError').textContent = '';
 
     showScreen('clientScreen');
     displayUser();
