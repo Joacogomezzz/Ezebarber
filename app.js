@@ -83,8 +83,25 @@ async function handleLogin(e) {
     }
 
     if (user) {
-        // Comparar contraseña hasheada
-        const passwordMatch = await bcrypt.compare(password, user.password);
+        let passwordMatch = false;
+
+        // Comprobar si es contraseña hasheada (comienza con $2a$ o $2b$ o $2y$)
+        if (user.password.startsWith('$2a$') || user.password.startsWith('$2b$') || user.password.startsWith('$2y$')) {
+            passwordMatch = await bcrypt.compare(password, user.password);
+        } else {
+            // Contraseña antigua sin hashear (compatibilidad)
+            passwordMatch = user.password === password;
+
+            // Si coincide, rehashear y actualizar
+            if (passwordMatch) {
+                const hashedPassword = await bcrypt.hash(password, 10);
+                user.password = hashedPassword;
+                users[users.findIndex(u => u.email.toLowerCase() === email)] = user;
+                localStorage.setItem('users', JSON.stringify(users));
+                sendUserToGoogleSheet(user);
+            }
+        }
+
         if (passwordMatch) {
             currentUser = { name: user.name, lastname: user.lastname, phone: user.phone, email: user.email, id: user.id, role: 'client' };
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
