@@ -70,7 +70,7 @@ async function handleLogin(e) {
 
     // Primero intenta con localStorage
     let users = JSON.parse(localStorage.getItem('users')) || [];
-    let user = users.find(u => u.email.toLowerCase() === email && u.password === password);
+    let user = users.find(u => u.email.toLowerCase() === email);
 
     // Si no encuentra en localStorage, intenta cargar de Google Sheets
     if (!user) {
@@ -78,25 +78,31 @@ async function handleLogin(e) {
         if (sheetUsers) {
             users = sheetUsers;
             localStorage.setItem('users', JSON.stringify(users));
-            user = users.find(u => u.email.toLowerCase() === email && u.password === password);
+            user = users.find(u => u.email.toLowerCase() === email);
         }
     }
 
     if (user) {
-        currentUser = user;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        showScreen('clientScreen');
-        displayUser();
-        loadClientBookings();
-        renderWizardStep1();
-        errorDiv.textContent = '';
+        // Comparar contraseña hasheada
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (passwordMatch) {
+            currentUser = { name: user.name, lastname: user.lastname, phone: user.phone, email: user.email, id: user.id, role: 'client' };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showScreen('clientScreen');
+            displayUser();
+            loadClientBookings();
+            renderWizardStep1();
+            errorDiv.textContent = '';
+        } else {
+            errorDiv.textContent = 'Email o contraseña incorrectos';
+        }
     } else {
         errorDiv.textContent = 'Email o contraseña incorrectos';
     }
 }
 
 // Handle Register
-function handleRegister(e) {
+async function handleRegister(e) {
     e.preventDefault();
     const name = document.getElementById('regName').value.trim();
     const lastname = document.getElementById('regLastname').value.trim();
@@ -128,14 +134,17 @@ function handleRegister(e) {
         return;
     }
 
-    const newUser = { name, lastname, phone, email, password, id: Date.now(), role: 'client' };
+    // Hashear contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = { name, lastname, phone, email, password: hashedPassword, id: Date.now(), role: 'client' };
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
 
     // Guardar en Google Sheets
     sendUserToGoogleSheet(newUser);
 
-    currentUser = newUser;
+    currentUser = { name, lastname, phone, email, id: newUser.id, role: 'client' };
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
 
     document.getElementById('registerForm').reset();
