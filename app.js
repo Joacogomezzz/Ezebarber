@@ -1,7 +1,8 @@
 // Configuración de Google Sheets
 const SHEET_ID = 'TU_SHEET_ID_AQUI';
 const API_KEY = 'TU_API_KEY_AQUI';
-const RANGE = 'Citas!A:J';
+const RANGE_CITAS = 'Citas!A:J';
+const RANGE_USUARIOS = 'Usuarios!A:F';
 
 // Estado de la aplicación
 let currentUser = null;
@@ -56,10 +57,10 @@ function toggleForm(e) {
 }
 
 // Handle Login
-function handleLogin(e) {
+async function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('email').value.trim().toLowerCase();
-    const password = document.getElementById('password').value;
+    const password = document.getElementById('password').value.trim();
     const errorDiv = document.getElementById('loginError');
 
     if (!email || !password) {
@@ -67,8 +68,19 @@ function handleLogin(e) {
         return;
     }
 
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const user = users.find(u => u.email.toLowerCase() === email && u.password === password);
+    // Primero intenta con localStorage
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    let user = users.find(u => u.email.toLowerCase() === email && u.password === password);
+
+    // Si no encuentra en localStorage, intenta cargar de Google Sheets
+    if (!user) {
+        const sheetUsers = await loadUsersFromGoogleSheet();
+        if (sheetUsers) {
+            users = sheetUsers;
+            localStorage.setItem('users', JSON.stringify(users));
+            user = users.find(u => u.email.toLowerCase() === email && u.password === password);
+        }
+    }
 
     if (user) {
         currentUser = user;
@@ -119,6 +131,9 @@ function handleRegister(e) {
     const newUser = { name, lastname, phone, email, password, id: Date.now(), role: 'client' };
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
+
+    // Guardar en Google Sheets
+    sendUserToGoogleSheet(newUser);
 
     currentUser = newUser;
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -301,7 +316,7 @@ function confirmBooking() {
     }, 3000);
 }
 
-// Google Sheets
+// Google Sheets - Guardar citas
 async function sendToGoogleSheet(booking) {
     if (!SHEET_ID || SHEET_ID === 'TU_SHEET_ID_AQUI' || !API_KEY || API_KEY === 'TU_API_KEY_AQUI') {
         console.log('Google Sheets no configurado.');
@@ -322,7 +337,7 @@ async function sendToGoogleSheet(booking) {
     ]];
 
     try {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}:append?valueInputOption=USER_ENTERED&key=${API_KEY}`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE_CITAS}:append?valueInputOption=USER_ENTERED&key=${API_KEY}`;
         await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -330,6 +345,68 @@ async function sendToGoogleSheet(booking) {
         });
     } catch (error) {
         console.error('Error Google Sheets:', error);
+    }
+}
+
+// Google Sheets - Guardar usuario
+async function sendUserToGoogleSheet(user) {
+    if (!SHEET_ID || SHEET_ID === 'TU_SHEET_ID_AQUI' || !API_KEY || API_KEY === 'TU_API_KEY_AQUI') {
+        console.log('Google Sheets no configurado.');
+        return;
+    }
+
+    const values = [[
+        user.name,
+        user.lastname,
+        user.email,
+        user.phone,
+        user.password,
+        new Date().toLocaleString('es-ES')
+    ]];
+
+    try {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE_USUARIOS}:append?valueInputOption=USER_ENTERED&key=${API_KEY}`;
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ values })
+        });
+    } catch (error) {
+        console.error('Error guardando usuario:', error);
+    }
+}
+
+// Google Sheets - Cargar usuarios
+async function loadUsersFromGoogleSheet() {
+    if (!SHEET_ID || SHEET_ID === 'TU_SHEET_ID_AQUI' || !API_KEY || API_KEY === 'TU_API_KEY_AQUI') {
+        console.log('Google Sheets no configurado.');
+        return null;
+    }
+
+    try {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE_USUARIOS}?key=${API_KEY}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!data.values || data.values.length === 0) {
+            return null;
+        }
+
+        // Convertir filas de Google Sheets a objetos usuario
+        const users = data.values.slice(1).map((row, idx) => ({
+            name: row[0] || '',
+            lastname: row[1] || '',
+            email: row[2] || '',
+            phone: row[3] || '',
+            password: row[4] || '',
+            id: idx,
+            role: 'client'
+        }));
+
+        return users;
+    } catch (error) {
+        console.error('Error cargando usuarios:', error);
+        return null;
     }
 }
 
