@@ -28,7 +28,7 @@ const SERVICES = {
 };
 
 // Google OAuth
-const GOOGLE_CLIENT_ID = '344608296288-ugp7h88mqrkfnn9l0aq8i2m2n01tdopj.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '344608296288-c5cq6cph8hokiutucm3pd2lrgc3reqtm.apps.googleusercontent.com';
 
 // Inicializar
 document.addEventListener('DOMContentLoaded', () => {
