@@ -34,12 +34,22 @@ const GOOGLE_CLIENT_ID = '344608296288-c5cq6cph8hokiutucm3pd2lrgc3reqtm.apps.goo
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     document.getElementById('completeProfileForm').addEventListener('submit', handleCompleteProfile);
-    initializeGoogleLogin();
+    // Esperar a que Google cargue
+    if (typeof google !== 'undefined') {
+        initializeGoogleLogin();
+    } else {
+        window.addEventListener('load', () => setTimeout(initializeGoogleLogin, 300));
+    }
 });
 
 function initializeGoogleLogin() {
     if (GOOGLE_CLIENT_ID === 'TU_GOOGLE_CLIENT_ID_AQUI') {
         console.log('Google Client ID no configurado');
+        return;
+    }
+
+    if (typeof google === 'undefined') {
+        setTimeout(initializeGoogleLogin, 500);
         return;
     }
 
@@ -308,8 +318,8 @@ function renderWizardStep2() {
     for (let i = 0; i < 14; i++) {
         const date = new Date(today);
         date.setDate(date.getDate() + i);
-        const dateStr = date.toISOString().split('T')[0];
-        const dayOfWeek = date.getDay();
+        const dateStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+        const dayOfWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getDay();
         const dayLabel = dayNames[dayOfWeek];
         const dayNum = date.getDate();
         const monthStr = months[date.getMonth()];
@@ -339,7 +349,8 @@ function selectDay(dateStr, label) {
 // STEP 3: Horarios
 function renderWizardStep3() {
     const grid = document.getElementById('timesGrid');
-    const dayOfWeek = new Date(wizardState.date).getDay();
+    const [y,m,d] = wizardState.date.split('-').map(Number);
+    const dayOfWeek = new Date(y, m-1, d).getDay();
     const hours = generateAvailableHours(dayOfWeek, wizardState.date);
 
     grid.innerHTML = hours.map(hour => `
@@ -362,7 +373,8 @@ function renderWizardStep4() {
 }
 
 function confirmBooking() {
-    const notes = document.getElementById('notes').value;
+    const notesEl = document.getElementById('notes');
+    const notes = notesEl ? notesEl.value : '';
     const errorDiv = document.getElementById('bookingError');
 
     const booking = {
@@ -387,7 +399,7 @@ function confirmBooking() {
 
     // Reset wizard
     wizardState = { step: 1, service: null, serviceLabel: null, date: null, dateLabel: null, time: null, notes: '' };
-    document.getElementById('notes').value = '';
+    if (document.getElementById('notes')) document.getElementById('notes').value = '';
 
     // Success message
     const successDiv = document.getElementById('bookingSuccess');
@@ -501,6 +513,7 @@ async function loadUsersFromGoogleSheet() {
 // Load client bookings
 function loadClientBookings() {
     const bookingsList = document.getElementById('bookingsList');
+    if (!bookingsList) return;
     const userBookings = allBookings.filter(b => b.userId === currentUser.id);
 
     if (userBookings.length === 0) {
@@ -668,12 +681,10 @@ function logout() {
     currentUser = null;
     wizardState = { step: 1, service: null, serviceLabel: null, date: null, dateLabel: null, time: null, notes: '' };
     showScreen('loginScreen');
-    document.getElementById('loginForm').reset();
-    document.getElementById('registerForm').reset();
-    document.getElementById('registerForm').classList.add('hidden');
-    document.getElementById('loginForm').classList.remove('hidden');
 
-    // Logout de Google
+    const profileForm = document.getElementById('completeProfileForm');
+    if (profileForm) { profileForm.reset(); profileForm.classList.add('hidden'); }
+
     if (typeof google !== 'undefined') {
         google.accounts.id.disableAutoSelect();
     }

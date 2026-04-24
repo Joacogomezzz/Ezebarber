@@ -4,11 +4,21 @@
     box-sizing: border-box;
 }
 
+:root {
+    --accent: #c8a96e;
+    --accent-dark: #a8893e;
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #222;
+    --border: rgba(200, 169, 110, 0.2);
+    --text: #f0f0f0;
+    --text-muted: #888;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: url('barbershop-bg.jpg') center/contain no-repeat fixed;
-    background-attachment: fixed;
-    color: #333;
+    background: var(--bg);
+    color: var(--text);
     min-height: 100vh;
 }
 
@@ -46,7 +56,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('barbershop-bg.jpg') center/contain no-repeat fixed;
+    background: linear-gradient(135deg, #0f0f0f 0%, #1a1208 50%, #0f0f0f 100%);
     z-index: 9999;
 }
 
@@ -55,127 +65,152 @@ body {
 }
 
 .login-container {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 40px rgba(255, 0, 255, 0.2);
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border);
     width: 100%;
     max-width: 400px;
-    padding: 40px;
-    border: 1px solid rgba(255, 0, 255, 0.3);
+    padding: 48px 40px;
 }
 
 .logo {
     text-align: center;
-    font-size: 48px;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
+}
+
+.logo-img {
+    width: 160px;
+    height: 160px;
+    object-fit: contain;
+}
+
+.logo-header {
+    width: 190px;
+    height: 190px;
+    object-fit: contain;
+    vertical-align: middle;
 }
 
 .login-container h1 {
     text-align: center;
-    margin-bottom: 30px;
-    color: #1a1a1a;
-    font-size: 28px;
+    margin-bottom: 8px;
+    color: var(--text);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.login-subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 32px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-weight: 600;
-    color: #333;
-    font-size: 14px;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
     width: 100%;
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 6px;
-    font-size: 16px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    font-size: 15px;
     font-family: inherit;
-    background: white;
-    color: #333;
+    background: var(--surface2);
+    color: var(--text);
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #ff00ff;
-    box-shadow: 0 0 0 3px rgba(255, 0, 255, 0.2);
-    background: white;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200, 169, 110, 0.15);
 }
 
 .btn-primary {
     width: 100%;
-    padding: 12px;
-    background: #000;
-    color: white;
+    padding: 13px;
+    background: var(--accent);
+    color: #0f0f0f;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 600;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.3px;
 }
 
 .btn-primary:hover {
-    background: #333;
+    background: var(--accent-dark);
+}
+
+.btn-primary:active {
+    transform: scale(0.99);
 }
 
 .btn-secondary {
-    padding: 8px 16px;
-    background: rgba(255, 255, 255, 0.95);
-    color: #000;
-    border: 2px solid rgba(255, 0, 255, 0.6);
-    border-radius: 6px;
+    padding: 10px 18px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 600;
-    transition: all 0.3s;
-    backdrop-filter: blur(5px);
+    transition: all 0.2s;
 }
 
 .btn-secondary:hover {
-    background: rgba(255, 255, 255, 1);
-    border-color: #ff00ff;
-    box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.3);
 }
 
 .btn-small {
     padding: 6px 12px;
-    background: rgba(100, 100, 100, 0.7);
-    color: white;
-    border: none;
-    border-radius: 4px;
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
     cursor: pointer;
     font-size: 12px;
-    transition: background 0.3s;
+    transition: background 0.2s;
     margin-top: 8px;
     width: 100%;
 }
 
 .btn-small:hover {
-    background: rgba(100, 100, 100, 0.9);
+    background: rgba(255,255,255,0.12);
 }
 
 .toggle-form {
     text-align: center;
     margin-top: 20px;
     font-size: 14px;
+    color: var(--text-muted);
 }
 
 .toggle-form a {
-    color: #000;
+    color: var(--accent);
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
@@ -187,11 +222,11 @@ body {
 
 .error-message {
     margin-top: 15px;
-    padding: 12px;
-    background: #fee;
-    border: 1px solid #fcc;
-    color: #c33;
-    border-radius: 6px;
+    padding: 12px 14px;
+    background: rgba(200, 50, 50, 0.12);
+    border: 1px solid rgba(200, 50, 50, 0.3);
+    color: #f87171;
+    border-radius: 8px;
     font-size: 14px;
     display: none;
 }
@@ -201,11 +236,11 @@ body {
 }
 
 .success-message {
-    padding: 12px;
-    background: #efe;
-    border: 1px solid #cfc;
-    color: #3c3;
-    border-radius: 6px;
+    padding: 12px 14px;
+    background: rgba(50, 200, 100, 0.12);
+    border: 1px solid rgba(50, 200, 100, 0.3);
+    color: #4ade80;
+    border-radius: 8px;
     font-size: 14px;
     margin-bottom: 20px;
 }
@@ -216,42 +251,48 @@ body {
 
 /* Client & Barber Screens */
 .container {
-    max-width: 1000px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 20px;
-    background: transparent;
+    padding: 6px 20px;
     min-height: 100vh;
 }
 
 header {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 30px;
+    background: transparent;
+    padding: 4px 0;
+    margin-bottom: 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 30px rgba(255, 0, 255, 0.2);
-    border: 1px solid rgba(255, 0, 255, 0.3);
 }
 
 header h1 {
-    font-size: 24px;
-    color: #000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 0;
+}
+
+header h1 {
+    font-size: 28px;
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: -0.3px;
 }
 
 .user-info {
     display: flex;
     align-items: center;
-    gap: 15px;
-    color: #000;
+    gap: 12px;
+    color: var(--text-muted);
+    font-size: 14px;
 }
 
 main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
 }
 
 .booking-section {
@@ -259,67 +300,75 @@ main {
 }
 
 section {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 30px;
+    background: var(--surface);
+    padding: 28px;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 30px rgba(255, 0, 255, 0.2);
-    border: 1px solid rgba(255, 0, 255, 0.3);
+    border: 1px solid var(--border);
 }
 
 section h2 {
     margin-bottom: 20px;
-    font-size: 20px;
-    color: #000;
+    font-size: 18px;
+    color: var(--text);
+    font-weight: 700;
 }
 
 /* ======== WIZARD STYLES ======== */
 
 .wizard-container {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+    background: var(--surface);
     border-radius: 12px;
-    padding: 40px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 30px rgba(255, 0, 255, 0.2);
-    margin-bottom: 40px;
-    border: 1px solid rgba(255, 0, 255, 0.3);
+    padding: 20px 32px;
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+    width: min(600px, 100%);
+    min-height: min(520px, calc(100vh - 250px));
+    max-height: calc(100vh - 200px);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
 }
 
 .wizard-progress {
-    margin-bottom: 40px;
+    margin-bottom: 16px;
 }
 
 .progress-text {
     display: block;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
-    color: #666;
-    margin-bottom: 12px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .progress-bar {
     width: 100%;
-    height: 4px;
-    background: #f0f0f0;
+    height: 3px;
+    background: rgba(255,255,255,0.08);
     border-radius: 2px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #ff00ff, #00ffff);
-    transition: width 0.3s ease;
+    background: var(--accent);
+    transition: width 0.4s ease;
     width: 25%;
+    border-radius: 2px;
 }
 
 .wizard-step {
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.25s ease;
 }
 
 .wizard-step h2 {
-    font-size: 28px;
-    margin-bottom: 30px;
-    color: #000;
+    font-size: 22px;
+    margin-bottom: 16px;
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
 .wizard-step.hidden {
@@ -327,67 +376,66 @@ section h2 {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* STEP 1: Servicios */
 .services-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 16px;
-    margin-bottom: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
 }
 
 .service-card {
-    background: rgba(245, 245, 245, 0.9);
-    border: 2px solid rgba(255, 0, 255, 0.4);
-    border-radius: 8px;
-    padding: 20px;
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 20px 16px;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
+    transition: all 0.2s ease;
 }
 
 .service-card:hover {
-    border-color: #ff00ff;
-    background: rgba(255, 255, 255, 0.95);
+    border-color: var(--accent);
+    background: rgba(200, 169, 110, 0.06);
     transform: translateY(-2px);
-    box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
 }
 
 .service-card.selected {
-    background: rgba(0, 0, 0, 0.85);
-    border-color: #ff00ff;
-    color: white;
-    box-shadow: 0 0 30px rgba(255, 0, 255, 0.6);
+    background: rgba(200, 169, 110, 0.12);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
 }
 
 .service-card h3 {
-    font-size: 16px;
+    font-size: 15px;
     margin-bottom: 8px;
     font-weight: 700;
+    color: var(--text);
 }
 
 .service-price {
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 800;
     margin-bottom: 4px;
+    color: var(--accent);
 }
 
 .service-duration {
     font-size: 12px;
-    opacity: 0.7;
+    color: var(--text-muted);
 }
 
 /* STEP 2: Días */
 .days-scroll {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     overflow-x: auto;
-    margin-bottom: 30px;
-    padding-bottom: 10px;
+    margin-bottom: 28px;
+    padding-bottom: 8px;
 }
 
 .day-button {
@@ -396,43 +444,44 @@ section h2 {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 90px;
-    height: 90px;
-    background: rgba(245, 245, 245, 0.9);
-    border: 2px solid rgba(255, 0, 255, 0.4);
-    border-radius: 8px;
+    width: 80px;
+    height: 80px;
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     font-weight: 600;
-    backdrop-filter: blur(5px);
+    color: var(--text);
 }
 
 .day-button:hover {
-    border-color: #ff00ff;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
+    border-color: var(--accent);
+    background: rgba(200, 169, 110, 0.06);
 }
 
 .day-button.selected {
-    background: rgba(0, 0, 0, 0.85);
-    color: white;
-    border-color: #ff00ff;
-    box-shadow: 0 0 30px rgba(255, 0, 255, 0.6);
+    background: rgba(200, 169, 110, 0.12);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+    color: var(--accent);
 }
 
 .day-button:disabled {
-    opacity: 0.5;
+    opacity: 0.3;
     cursor: not-allowed;
 }
 
 .day-label {
-    font-size: 12px;
-    opacity: 0.7;
+    font-size: 11px;
+    color: var(--text-muted);
     text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .day-number {
-    font-size: 18px;
+    font-size: 20px;
+    font-weight: 800;
     margin-top: 4px;
 }
 
@@ -440,43 +489,41 @@ section h2 {
 .times-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: 12px;
-    margin-bottom: 30px;
+    gap: 10px;
+    margin-bottom: 28px;
 }
 
 .time-button {
-    padding: 16px 12px;
-    background: rgba(245, 245, 245, 0.9);
-    border: 2px solid rgba(255, 0, 255, 0.4);
+    padding: 14px 10px;
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.08);
     border-radius: 8px;
     font-weight: 700;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
-    color: #000;
+    transition: all 0.2s ease;
+    color: var(--text);
 }
 
 .time-button:hover {
-    border-color: #ff00ff;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
+    border-color: var(--accent);
+    background: rgba(200, 169, 110, 0.06);
 }
 
 .time-button.selected {
-    background: rgba(0, 0, 0, 0.85);
-    color: white;
-    border-color: #ff00ff;
-    box-shadow: 0 0 30px rgba(255, 0, 255, 0.6);
+    background: rgba(200, 169, 110, 0.12);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+    color: var(--accent);
 }
 
 /* STEP 4: Confirmación */
 .confirmation-summary {
-    background: rgba(245, 245, 245, 0.9);
-    border-radius: 8px;
-    padding: 24px;
-    margin-bottom: 30px;
-    border: 1px solid rgba(255, 0, 255, 0.3);
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 28px;
+    border: 1px solid rgba(255,255,255,0.06);
 }
 
 .summary-item {
@@ -484,7 +531,7 @@ section h2 {
     justify-content: space-between;
     align-items: center;
     padding: 12px 0;
-    border-bottom: 1px solid rgba(200, 200, 200, 0.5);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
 .summary-item:last-child {
@@ -493,24 +540,27 @@ section h2 {
 
 .summary-label {
     font-weight: 600;
-    color: #666;
+    color: var(--text-muted);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 .summary-value {
     font-weight: 700;
-    font-size: 16px;
-    color: #000;
+    font-size: 15px;
+    color: var(--text);
 }
 
 /* Wizard Actions */
 .wizard-actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
 }
 
 .wizard-actions .btn-secondary {
     flex: 1;
-    padding: 14px;
+    padding: 13px;
 }
 
 .wizard-actions .btn-primary {
@@ -522,51 +572,65 @@ section h2 {
 }
 
 .btn-large {
-    font-size: 16px !important;
-    padding: 16px !important;
+    font-size: 15px !important;
+    padding: 14px !important;
 }
 
 /* Bookings List */
 .bookings-list {
     display: grid;
-    gap: 15px;
+    gap: 12px;
 }
 
 .booking-card {
-    border: 1px solid rgba(255, 0, 255, 0.3);
-    padding: 15px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.9);
-    transition: all 0.3s;
-    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 16px;
+    border-radius: 10px;
+    background: var(--surface2);
+    transition: all 0.2s;
 }
 
 .booking-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 20px rgba(255, 0, 255, 0.3);
-    border-color: #ff00ff;
+    border-color: var(--border);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
 .booking-card h4 {
-    margin-bottom: 8px;
-    color: #000;
+    margin-bottom: 6px;
+    color: var(--text);
+    font-size: 15px;
 }
 
 .booking-card p {
-    font-size: 14px;
-    margin-bottom: 4px;
-    color: #666;
+    font-size: 13px;
+    margin-bottom: 3px;
+    color: var(--text-muted);
 }
 
 .booking-time {
-    font-weight: 600;
-    color: #000;
+    font-weight: 700;
+    color: var(--accent);
     margin-top: 10px;
+    font-size: 14px;
 }
 
 .empty-state {
     text-align: center;
-    color: #999;
+    color: var(--text-muted);
     padding: 40px 20px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--surface);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px;
 }
 
 /* Responsive */
@@ -577,7 +641,7 @@ section h2 {
 
     header {
         flex-direction: column;
-        gap: 15px;
+        gap: 12px;
         text-align: center;
     }
 
@@ -586,7 +650,7 @@ section h2 {
     }
 
     .wizard-step h2 {
-        font-size: 24px;
+        font-size: 20px;
     }
 
     .services-grid {
@@ -598,9 +662,8 @@ section h2 {
     }
 
     .day-button {
-        width: 70px;
-        height: 70px;
-        font-size: 14px;
+        width: 68px;
+        height: 68px;
     }
 
     .wizard-actions {
@@ -611,37 +674,23 @@ section h2 {
         width: 100%;
     }
 
-    /* Mejoras para móvil */
     .login-container {
-        width: 100%;
-        max-width: 100%;
-        padding: 20px;
-        margin: 10px;
+        padding: 32px 24px;
     }
 
     .form-group input,
     .form-group select,
     .form-group textarea {
         font-size: 16px;
-        padding: 14px;
+        padding: 13px 14px;
         min-height: 44px;
     }
 
     .btn-primary {
         min-height: 44px;
-        font-size: 16px;
     }
 
     .btn-secondary {
         min-height: 44px;
-        font-size: 16px;
-    }
-
-    .login-container h1 {
-        font-size: 24px;
-    }
-
-    .logo {
-        font-size: 36px;
     }
 }
