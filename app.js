@@ -254,6 +254,22 @@ function displayUser() {
     }
 }
 
+// ======== SWIPE WIZARD ========
+(function() {
+    let startX = 0;
+    let dragging = false;
+
+    // Touch (mobile)
+    document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+    document.addEventListener('touchend', e => {
+        const diff = startX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) < 50) return;
+        if (diff > 0) goToStep(wizardState.step + 1);
+        else goToStep(wizardState.step - 1);
+    }, { passive: true });
+
+})();
+
 // ======== WIZARD FUNCTIONS ========
 
 function goToStep(stepNum) {

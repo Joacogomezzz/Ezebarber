@@ -415,11 +415,21 @@ main {
     padding-bottom: 12px;
     margin-bottom: auto;
     padding-bottom: 28px;
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
 }
 
 .days-scroll::-webkit-scrollbar {
-    display: none;
+    height: 4px;
+}
+
+.days-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.days-scroll::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 4px;
 }
 
 .day-button {
