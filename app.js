@@ -21,10 +21,9 @@ let wizardState = {
 
 // Servicios con precios y duración
 const SERVICES = {
-    corte: { label: 'Corte de cabello', price: '$30', duration: '45 min' },
-    barba: { label: 'Arreglo de barba', price: '$20', duration: '30 min' },
-    completo: { label: 'Corte + Barba', price: '$45', duration: '60 min' },
-    tinte: { label: 'Tinte', price: '$35', duration: '45 min' }
+    corte: { label: 'Corte de cabello', price: '$12.000', duration: '45 min' },
+    claritos: { label: 'Claritos', price: '$20.000', duration: '60 min' },
+    global: { label: 'Global', price: '$20.000', duration: '60 min' }
 };
 
 // Google OAuth
