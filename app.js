@@ -261,14 +261,16 @@ function displayUser() {
 
     // Touch (mobile)
     let startY = 0;
+    let ignoreSwipe = false;
     document.addEventListener('touchstart', e => {
         startX = e.touches[0].clientX;
         startY = e.touches[0].clientY;
+        ignoreSwipe = !!e.target.closest('#daysScroll, .time-grid, input, button, select, textarea');
     }, { passive: true });
     document.addEventListener('touchend', e => {
+        if (ignoreSwipe) return;
         const diffX = startX - e.changedTouches[0].clientX;
         const diffY = startY - e.changedTouches[0].clientY;
-        // Ignorar si el movimiento vertical es mayor (scroll) o si no es swipe horizontal claro
         if (Math.abs(diffX) < 80) return;
         if (Math.abs(diffY) > Math.abs(diffX)) return;
         if (diffX > 0) goToStep(wizardState.step + 1);
