@@ -1,6 +1,7 @@
 // Configuración de Google Sheets
-const SHEET_ID = 'TU_SHEET_ID_AQUI';
-const API_KEY = 'TU_API_KEY_AQUI';
+const SHEET_ID = '1-IvHq5EtHb_B-jd1IknuOv0twCpiaa6G8wlqiIdaEkQ';
+const API_KEY = 'AIzaSyAF6ZLnTBWyLmXN2o3Z-Hjgt1xcx_QKCfs';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyuxbTHJ49-gLW03TmFZ6C3sqaxphUDdQjgxB2ZpcL2nr4TDY1fdk7hPwdOLuBklc8ENg/exec';
 const RANGE_CITAS = 'Citas!A:J';
 const RANGE_USUARIOS = 'Usuarios!A:F';
 
@@ -229,8 +230,7 @@ async function handleRegister(e) {
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
 
-    // Guardar en Google Sheets (deshabilitado sin configuración)
-    // sendUserToGoogleSheet(newUser);
+    sendUserToGoogleSheet(newUser);
 
     currentUser = { name, lastname, phone, email, id: newUser.id, role: 'client' };
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -442,30 +442,20 @@ function confirmBooking() {
 
 // Google Sheets - Guardar citas
 async function sendToGoogleSheet(booking) {
-    if (!SHEET_ID || SHEET_ID === 'TU_SHEET_ID_AQUI' || !API_KEY || API_KEY === 'TU_API_KEY_AQUI') {
-        console.log('Google Sheets no configurado.');
-        return;
-    }
-
-    const values = [[
-        booking.name,
-        booking.lastname,
-        booking.phone,
-        booking.email,
-        booking.service,
-        booking.date,
-        booking.time,
-        booking.notes || '',
-        'pendiente',
-        new Date().toLocaleString('es-ES')
-    ]];
-
     try {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE_CITAS}:append?valueInputOption=USER_ENTERED&key=${API_KEY}`;
-        await fetch(url, {
+        await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ values })
+            body: JSON.stringify({
+                type: 'cita',
+                nombre: booking.name,
+                apellido: booking.lastname,
+                telefono: booking.phone,
+                email: booking.email,
+                servicio: SERVICES[booking.service]?.label || booking.service,
+                fecha: booking.date,
+                hora: booking.time,
+                notas: booking.notes || ''
+            })
         });
     } catch (error) {
         console.error('Error Google Sheets:', error);
@@ -474,26 +464,16 @@ async function sendToGoogleSheet(booking) {
 
 // Google Sheets - Guardar usuario
 async function sendUserToGoogleSheet(user) {
-    if (!SHEET_ID || SHEET_ID === 'TU_SHEET_ID_AQUI' || !API_KEY || API_KEY === 'TU_API_KEY_AQUI') {
-        console.log('Google Sheets no configurado.');
-        return;
-    }
-
-    const values = [[
-        user.name,
-        user.lastname,
-        user.email,
-        user.phone,
-        user.password,
-        new Date().toLocaleString('es-ES')
-    ]];
-
     try {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE_USUARIOS}:append?valueInputOption=USER_ENTERED&key=${API_KEY}`;
-        await fetch(url, {
+        await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ values })
+            body: JSON.stringify({
+                type: 'usuario',
+                nombre: user.name,
+                apellido: user.lastname,
+                email: user.email,
+                telefono: user.phone
+            })
         });
     } catch (error) {
         console.error('Error guardando usuario:', error);
