@@ -103,6 +103,12 @@ async function handleCompleteProfile(e) {
         };
         users.push(newUser);
         localStorage.setItem('users', JSON.stringify(users));
+        sendUserToGoogleSheet(newUser);
+        const enviados = JSON.parse(localStorage.getItem('usuariosEnviados')) || [];
+        if (!enviados.includes(newUser.email)) {
+            enviados.push(newUser.email);
+            localStorage.setItem('usuariosEnviados', JSON.stringify(enviados));
+        }
 
         currentUser = { name, lastname, phone, email: newUser.email, id: newUser.id, googleId: newUser.googleId, role: 'client' };
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -175,6 +181,12 @@ async function handleLogin(e) {
         if (passwordMatch) {
             currentUser = { name: user.name, lastname: user.lastname, phone: user.phone, email: user.email, id: user.id, role: 'client' };
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            const enviados = JSON.parse(localStorage.getItem('usuariosEnviados')) || [];
+            if (!enviados.includes(user.email)) {
+                sendUserToGoogleSheet(user);
+                enviados.push(user.email);
+                localStorage.setItem('usuariosEnviados', JSON.stringify(enviados));
+            }
             showScreen('clientScreen');
             displayUser();
             loadClientBookings();
@@ -231,6 +243,11 @@ async function handleRegister(e) {
     localStorage.setItem('users', JSON.stringify(users));
 
     sendUserToGoogleSheet(newUser);
+    const enviados = JSON.parse(localStorage.getItem('usuariosEnviados')) || [];
+    if (!enviados.includes(email)) {
+        enviados.push(email);
+        localStorage.setItem('usuariosEnviados', JSON.stringify(enviados));
+    }
 
     currentUser = { name, lastname, phone, email, id: newUser.id, role: 'client' };
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -445,6 +462,7 @@ async function sendToGoogleSheet(booking) {
     try {
         await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
+            mode: 'no-cors',
             body: JSON.stringify({
                 type: 'cita',
                 nombre: booking.name,
@@ -467,6 +485,7 @@ async function sendUserToGoogleSheet(user) {
     try {
         await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
+            mode: 'no-cors',
             body: JSON.stringify({
                 type: 'usuario',
                 nombre: user.name,
@@ -671,6 +690,13 @@ function handleGoogleLogin(response) {
         googleId: user.googleId
     };
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+    const enviados = JSON.parse(localStorage.getItem('usuariosEnviados')) || [];
+    if (!enviados.includes(user.email)) {
+        sendUserToGoogleSheet(user);
+        enviados.push(user.email);
+        localStorage.setItem('usuariosEnviados', JSON.stringify(enviados));
+    }
 
     showScreen('clientScreen');
     displayUser();
