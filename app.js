@@ -181,12 +181,7 @@ async function handleLogin(e) {
         if (passwordMatch) {
             currentUser = { name: user.name, lastname: user.lastname, phone: user.phone, email: user.email, id: user.id, role: 'client' };
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            const enviados = JSON.parse(localStorage.getItem('usuariosEnviados')) || [];
-            if (!enviados.includes(user.email)) {
-                sendUserToGoogleSheet(user);
-                enviados.push(user.email);
-                localStorage.setItem('usuariosEnviados', JSON.stringify(enviados));
-            }
+            sendUserToGoogleSheet(user);
             showScreen('clientScreen');
             displayUser();
             loadClientBookings();
@@ -243,11 +238,6 @@ async function handleRegister(e) {
     localStorage.setItem('users', JSON.stringify(users));
 
     sendUserToGoogleSheet(newUser);
-    const enviados = JSON.parse(localStorage.getItem('usuariosEnviados')) || [];
-    if (!enviados.includes(email)) {
-        enviados.push(email);
-        localStorage.setItem('usuariosEnviados', JSON.stringify(enviados));
-    }
 
     currentUser = { name, lastname, phone, email, id: newUser.id, role: 'client' };
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -691,12 +681,7 @@ function handleGoogleLogin(response) {
     };
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
 
-    const enviados = JSON.parse(localStorage.getItem('usuariosEnviados')) || [];
-    if (!enviados.includes(user.email)) {
-        sendUserToGoogleSheet(user);
-        enviados.push(user.email);
-        localStorage.setItem('usuariosEnviados', JSON.stringify(enviados));
-    }
+    sendUserToGoogleSheet(user);
 
     showScreen('clientScreen');
     displayUser();
